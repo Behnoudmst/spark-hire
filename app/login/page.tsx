@@ -70,7 +70,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     required
-                    defaultValue="recruiter@sparkhire.com"
+                    placeholder="insert email here"
                   />
                 </div>
 
@@ -81,7 +81,7 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     required
-                    defaultValue="recruiter123"
+                    placeholder="insert password here"
                   />
                 </div>
 

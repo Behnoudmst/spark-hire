@@ -49,6 +49,7 @@ COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/schema          ./schema
 COPY --from=builder --chown=nextjs:nodejs /app/generated       ./generated
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/scripts         ./scripts
 
 # Persistent data directories — mount as Docker volumes
 RUN mkdir -p /data public/uploads \
