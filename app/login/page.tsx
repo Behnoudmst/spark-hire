@@ -53,64 +53,62 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <main className="flex flex-1 items-center justify-center p-8">
         <div className="w-full max-w-sm">
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recruiter Login</CardTitle>
-            <CardDescription>
-              Default:{" "}
-              <code className="font-mono">recruiter@sparkhire.com</code> /{" "}
-              <code className="font-mono">recruiter123</code>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  defaultValue="recruiter@sparkhire.com"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  defaultValue="recruiter123"
-                />
-              </div>
-
-              {state.status === "error" && (
-                <Alert variant="destructive">
-                  <WarningCircle />
-                  <AlertTitle>Login failed</AlertTitle>
-                  <AlertDescription>{state.message}</AlertDescription>
-                </Alert>
-              )}
-
-              <Button
-                type="submit"
-                disabled={state.status === "loading"}
-                className="w-full"
-              >
-                {state.status === "loading" && (
-                  <SpinnerGap
-                    data-icon="inline-start"
-                    className="animate-spin"
+          <Card>
+            <CardHeader>
+              <CardTitle>Recruiter Login</CardTitle>
+              <CardDescription>
+                Please login to access the recruiter dashboard and manage your
+                job listings and candidates.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    defaultValue="recruiter@sparkhire.com"
                   />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    defaultValue="recruiter123"
+                  />
+                </div>
+
+                {state.status === "error" && (
+                  <Alert variant="destructive">
+                    <WarningCircle />
+                    <AlertTitle>Login failed</AlertTitle>
+                    <AlertDescription>{state.message}</AlertDescription>
+                  </Alert>
                 )}
-                {state.status === "loading" ? "Signing in…" : "Sign In"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+
+                <Button
+                  type="submit"
+                  disabled={state.status === "loading"}
+                  className="w-full"
+                >
+                  {state.status === "loading" && (
+                    <SpinnerGap
+                      data-icon="inline-start"
+                      className="animate-spin"
+                    />
+                  )}
+                  {state.status === "loading" ? "Signing in…" : "Sign In"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </main>
       <SiteFooter />
