@@ -1,6 +1,5 @@
 "use client";
 
-import SiteFooter from "@/components/site-footer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,7 +78,7 @@ export default function ApplyForm({ jobListing }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-[89vh] flex-col bg-background">
       <main className="flex-1">
       {/* Layout: single col mobile, 2-col desktop when job listing present */}
       <div
@@ -254,7 +253,7 @@ export default function ApplyForm({ jobListing }: Props) {
         </div>
       </div>
       </main>
-      <SiteFooter />
+
     </div>
   );
 }

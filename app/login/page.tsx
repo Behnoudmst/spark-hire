@@ -1,6 +1,5 @@
 "use client";
 
-import SiteFooter from "@/components/site-footer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,7 +49,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-[89vh] flex-col bg-background">
       <main className="flex flex-1 items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <Card>
@@ -111,7 +110,6 @@ export default function LoginPage() {
           </Card>
         </div>
       </main>
-      <SiteFooter />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import {
@@ -39,7 +38,7 @@ export default async function Home({
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-[89vh] flex-col bg-background">
       
       <main className="flex-1">
         <div className="mx-auto max-w-5xl px-6 py-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-8">
@@ -156,7 +155,7 @@ export default async function Home({
 
       </div>
     </main>
-    <SiteFooter />
+
   </div>
   );
 }

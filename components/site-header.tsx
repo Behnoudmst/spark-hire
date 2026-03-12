@@ -17,7 +17,7 @@ export default async function SiteHeader({ backHref, backLabel }: Props) {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-6">
+      <div className="mx-auto flex h-[5vh] max-w-5xl items-center justify-between gap-4 px-6">
         {/* Left: optional back link + logo */}
         <div className="flex items-center gap-3 min-w-0">
           {backHref && (
@@ -51,10 +51,7 @@ export default async function SiteHeader({ backHref, backLabel }: Props) {
           </div>
         ) : (
           <nav className="flex items-center gap-1 shrink-0">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/">Home</Link>
-            </Button>
-            <div className="mx-2 h-4 w-px bg-border" />
+           
             <Button asChild variant="outline" size="sm">
               <Link href="/login">Recruiter Login</Link>
             </Button>

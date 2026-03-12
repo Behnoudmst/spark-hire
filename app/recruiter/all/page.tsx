@@ -1,14 +1,13 @@
-import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -44,7 +43,7 @@ export default async function AllCandidatesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[89vh] bg-background">
       <SiteHeader
         backHref="/recruiter"
         backLabel="Dashboard"
@@ -122,7 +121,7 @@ export default async function AllCandidatesPage() {
           </CardContent>
         </Card>
       </main>
-      <SiteFooter />
+   
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function SwaggerPage() {
 
   if (!spec) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[89vh] items-center justify-center">
         <p className="text-gray-500">Loading API docs…</p>
       </div>
     );

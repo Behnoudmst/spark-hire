@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,7 +74,7 @@ export default async function RecruiterPage({
   const listingTotalPages = Math.max(1, Math.ceil(listingTotal / PAGE_SIZE));
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[89vh] bg-background">
       
       <main className="mx-auto max-w-4xl p-6">
         {/* Job Listings section */}
@@ -210,7 +209,7 @@ export default async function RecruiterPage({
           </Button>
         </div>
       </main>
-      <SiteFooter />
+  
     </div>
   );
 }

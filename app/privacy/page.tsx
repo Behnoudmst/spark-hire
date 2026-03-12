@@ -1,4 +1,3 @@
-import SiteFooter from "@/components/site-footer";
 import { COMPANY_NAME } from "@/lib/brand";
 import type { Metadata } from "next";
 
@@ -8,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-[89vh] flex-col bg-background">
       <main className="flex-1">
         <div className="mx-auto max-w-2xl px-6 py-12">
         <h1 className="text-2xl font-bold mb-1">Privacy Policy</h1>
@@ -134,7 +133,7 @@ export default function PrivacyPolicyPage() {
         </section>
         </div>
       </main>
-      <SiteFooter />
+     
     </div>
   );
 }
