@@ -1,77 +1,92 @@
+import SiteFooter from "@/components/site-footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CandidateStatus } from "@/generated/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
-    ArrowRight,
-    FilePdf,
-    Lightning,
-    Tray,
+  ArrowRight,
+  FilePdf,
+  Tray,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import JobListingsSection from "./JobListingsSection";
 import ReviewButton from "./ReviewButton";
-import SignOutButton from "./SignOutButton";
 
-export default async function RecruiterPage() {
+const PAGE_SIZE = 10;
+
+export default async function RecruiterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
+}) {
   const session = await auth();
 
   if (!session) {
     redirect("/login");
   }
 
-  const candidates = await prisma.candidate.findMany({
-    where: { status: CandidateStatus.PRIORITY_QUEUE },
-    orderBy: [{ scoreTotal: "desc" }, { appliedAt: "asc" }],
-  });
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim();
+  const listingStatus = (sp.status ?? "all") as "all" | "active" | "inactive";
+  const listingPage = Math.max(1, parseInt(sp.page ?? "1") || 1);
 
-  const jobListings = await prisma.jobListing.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      location: true,
-      isActive: true,
-      createdAt: true,
-      _count: { select: { candidates: true } },
-    },
-  });
+  const listingWhere = {
+    ...(q
+      ? { OR: [{ title: { contains: q } }, { location: { contains: q } }] }
+      : {}),
+    ...(listingStatus === "active"
+      ? { isActive: true }
+      : listingStatus === "inactive"
+        ? { isActive: false }
+        : {}),
+  };
+
+  const [candidates, jobListings, listingTotal] = await Promise.all([
+    prisma.candidate.findMany({
+      where: { status: CandidateStatus.PRIORITY_QUEUE },
+      orderBy: [{ scoreTotal: "desc" }, { appliedAt: "asc" }],
+      include: { jobListing: { select: { id: true, title: true } } },
+    }),
+    prisma.jobListing.findMany({
+      where: listingWhere,
+      orderBy: { createdAt: "desc" },
+      skip: (listingPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        location: true,
+        isActive: true,
+        createdAt: true,
+        _count: { select: { candidates: true } },
+      },
+    }),
+    prisma.jobListing.count({ where: listingWhere }),
+  ]);
+
+  const listingTotalPages = Math.max(1, Math.ceil(listingTotal / PAGE_SIZE));
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Lightning weight="fill" className="size-5 text-primary" />
-          <div>
-            <p className="text-sm font-semibold leading-tight">Spark-Hire</p>
-            <p className="text-xs text-muted-foreground leading-tight">
-              Recruiter Dashboard
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground hidden sm:block">
-            {session.user?.email}
-          </span>
-          <SignOutButton />
-        </div>
-      </header>
-
+      
       <main className="mx-auto max-w-4xl p-6">
         {/* Job Listings section */}
-        <JobListingsSection listings={jobListings} />
+        <JobListingsSection
+          listings={jobListings}
+          total={listingTotal}
+          page={listingPage}
+          totalPages={listingTotalPages}
+          q={q}
+          status={listingStatus}
+        />
 
         <Separator className="my-8" />
 
@@ -91,18 +106,20 @@ export default async function RecruiterPage() {
         </div>
 
         {candidates.length === 0 ? (
-          <Card className="items-center py-16">
-            <Tray className="size-10 text-muted-foreground" weight="thin" />
-            <CardHeader className="items-center text-center">
-              <CardTitle>No candidates yet</CardTitle>
-              <CardDescription>
-                Submit applications via the{" "}
-                <Link href="/apply" className="text-primary underline underline-offset-3">
-                  apply page
-                </Link>
-                .
-              </CardDescription>
-            </CardHeader>
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
+              <Tray className="size-10 text-muted-foreground" weight="thin" />
+              <div>
+                <p className="text-sm font-semibold">No candidates yet</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Submit applications via the{" "}
+                  <Link href="/apply" className="text-primary underline underline-offset-3">
+                    apply page
+                  </Link>
+                  .
+                </p>
+              </div>
+            </CardContent>
           </Card>
         ) : (
           <div className="flex flex-col gap-3">
@@ -119,6 +136,9 @@ export default async function RecruiterPage() {
                         {c.name}
                       </p>
                       <p className="text-xs text-muted-foreground">{c.email}</p>
+                      {c.jobListing && (
+                        <p className="text-xs text-primary font-medium">{c.jobListing.title}</p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         Applied{" "}
                         {new Date(c.appliedAt).toLocaleDateString("en-US", {
@@ -190,6 +210,7 @@ export default async function RecruiterPage() {
           </Button>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

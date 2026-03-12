@@ -1,19 +1,19 @@
 "use client";
 
+import SiteFooter from "@/components/site-footer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
+import { SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -50,14 +50,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
-      <div className="w-full max-w-sm">
-        <Button asChild variant="ghost" size="sm" className="mb-6 -ml-2">
-          <Link href="/">
-            <ArrowLeft data-icon="inline-start" />
-            Back to home
-          </Link>
-        </Button>
+    <div className="flex min-h-screen flex-col bg-background">
+      <main className="flex flex-1 items-center justify-center p-8">
+        <div className="w-full max-w-sm">
 
         <Card>
           <CardHeader>
@@ -116,7 +111,9 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </main>
+      <SiteFooter />
     </div>
   );
 }

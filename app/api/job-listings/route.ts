@@ -4,21 +4,54 @@ import { prisma } from "@/lib/prisma";
 import { jobListingSchema } from "@/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  const listings = await prisma.jobListing.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      location: true,
-      isActive: true,
-      createdAt: true,
-      _count: { select: { candidates: true } },
-    },
+const PAGE_SIZE = 10;
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const q = (searchParams.get("q") ?? "").trim();
+  const status = searchParams.get("status") ?? "active";
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1") || 1);
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(searchParams.get("limit") ?? String(PAGE_SIZE)) || PAGE_SIZE),
+  );
+
+  const where = {
+    ...(q
+      ? { OR: [{ title: { contains: q } }, { location: { contains: q } }] }
+      : {}),
+    ...(status === "active"
+      ? { isActive: true }
+      : status === "inactive"
+        ? { isActive: false }
+        : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.jobListing.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        location: true,
+        isActive: true,
+        createdAt: true,
+        _count: { select: { candidates: true } },
+      },
+    }),
+    prisma.jobListing.count({ where }),
+  ]);
+
+  return NextResponse.json({
+    items,
+    total,
+    page,
+    totalPages: Math.max(1, Math.ceil(total / limit)),
   });
-  return NextResponse.json(listings);
 }
 
 export async function POST(req: NextRequest) {

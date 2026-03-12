@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import logger from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { jobListingSchema } from "@/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -15,11 +16,30 @@ export async function PATCH(
   const { id } = await params;
   try {
     const body = await req.json();
+
+    // Toggle-only call (just isActive boolean)
+    if (Object.keys(body).length === 1 && "isActive" in body) {
+      const listing = await prisma.jobListing.update({
+        where: { id },
+        data: { isActive: body.isActive },
+      });
+      logger.info({ listingId: id, isActive: listing.isActive }, "API: job listing toggled");
+      return NextResponse.json(listing);
+    }
+
+    // Full update — validate all editable fields
+    const validation = jobListingSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: validation.error.flatten() },
+        { status: 400 },
+      );
+    }
     const listing = await prisma.jobListing.update({
       where: { id },
-      data: { isActive: body.isActive },
+      data: validation.data,
     });
-    logger.info({ listingId: id, isActive: listing.isActive }, "API: job listing toggled");
+    logger.info({ listingId: id }, "API: job listing updated");
     return NextResponse.json(listing);
   } catch (err) {
     logger.error({ err }, "API: PATCH /api/job-listings/[id] error");

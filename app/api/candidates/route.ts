@@ -1,3 +1,4 @@
+import { PRIVACY_POLICY_VERSION } from "@/lib/brand";
 import logger from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { runEvaluationPipeline } from "@/lib/queue";
@@ -74,20 +75,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!resume || resume.type !== "application/pdf") {
+    const consentGiven = formData.get("consentGiven") === "true";
+    if (!consentGiven) {
       return NextResponse.json(
-        { error: "A PDF resume is required" },
+        { error: "Consent to data processing is required" },
         { status: 400 },
       );
     }
 
-    const existing = await prisma.candidate.findUnique({
-      where: { email: validation.data.email },
-    });
-    if (existing) {
+    if (!resume || resume.type !== "application/pdf") {
       return NextResponse.json(
-        { error: "A candidate with this email already exists" },
-        { status: 409 },
+        { error: "A PDF resume is required" },
+        { status: 400 },
       );
     }
 
@@ -104,6 +103,9 @@ export async function POST(req: NextRequest) {
         name: validation.data.name,
         email: validation.data.email,
         resumePath: `/uploads/${filename}`,
+        consentGiven: true,
+        consentAt: new Date(),
+        privacyPolicyVersion: PRIVACY_POLICY_VERSION,
         ...(jobListingId ? { jobListingId } : {}),
       },
     });

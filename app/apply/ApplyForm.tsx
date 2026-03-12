@@ -1,24 +1,24 @@
 "use client";
 
+import SiteFooter from "@/components/site-footer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    ArrowLeft,
-    Briefcase,
-    CheckCircle,
-    MapPin,
-    SpinnerGap,
-    WarningCircle,
+  Briefcase,
+  CheckCircle,
+  MapPin,
+  SpinnerGap,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -42,6 +42,8 @@ type SubmissionState =
 
 export default function ApplyForm({ jobListing }: Props) {
   const [state, setState] = useState<SubmissionState>({ status: "idle" });
+  const [consentPrivacy, setConsentPrivacy] = useState(false);
+  const [consentTerms, setConsentTerms] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -52,6 +54,7 @@ export default function ApplyForm({ jobListing }: Props) {
     if (jobListing) {
       formData.append("jobListingId", jobListing.id);
     }
+    formData.append("consentGiven", "true");
 
     try {
       const res = await fetch("/api/candidates", {
@@ -76,143 +79,182 @@ export default function ApplyForm({ jobListing }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8 bg-background">
-      <div className="w-full max-w-md">
-        <Button asChild variant="ghost" size="sm" className="mb-6 -ml-2">
-          <Link href="/">
-            <ArrowLeft data-icon="inline-start" />
-            Back to home
-          </Link>
-        </Button>
-
-        {/* Job context card */}
+    <div className="flex min-h-screen flex-col bg-background">
+      <main className="flex-1">
+      {/* Layout: single col mobile, 2-col desktop when job listing present */}
+      <div
+        className={
+          jobListing
+            ? "mx-auto grid max-w-5xl gap-8 p-6 md:grid-cols-[1fr_400px] md:items-start"
+            : "mx-auto flex max-w-md flex-col p-6"
+        }
+      >
+        {/* Left: job description */}
         {jobListing && (
-          <Card className="mb-4">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <Briefcase className="size-4 text-primary" weight="fill" />
-                <CardTitle className="text-base">{jobListing.title}</CardTitle>
+          <div className="md:sticky md:top-20 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto">
+            <div className="mb-3 flex items-center gap-2">
+              <Briefcase className="size-5 text-primary" weight="fill" />
+              <h1 className="text-xl font-semibold">{jobListing.title}</h1>
+            </div>
+            {jobListing.location && (
+              <div className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="size-3.5 shrink-0" />
+                {jobListing.location}
               </div>
-              {jobListing.location && (
-                <CardDescription className="flex items-center gap-1">
-                  <MapPin className="size-3 shrink-0" />
-                  {jobListing.location}
+            )}
+            <div
+              className="prose prose-sm dark:prose-invert max-w-none text-foreground"
+              dangerouslySetInnerHTML={{ __html: jobListing.description }}
+            />
+          </div>
+        )}
+
+        {/* Right: form */}
+        <div>
+          {state.status === "success" ? (
+            <Card>
+              <CardHeader>
+                <CheckCircle className="size-8 text-primary" weight="fill" />
+                <CardTitle>Application Submitted!</CardTitle>
+                <CardDescription>
+                  Your application is being evaluated by our AI engine.
                 </CardDescription>
-              )}
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {jobListing.description}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {state.status === "success" ? (
-          <Card>
-            <CardHeader>
-              <CheckCircle className="size-8 text-primary" weight="fill" />
-              <CardTitle>Application Submitted!</CardTitle>
-              <CardDescription>
-                Your application is being evaluated by our AI engine.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-xs">
-                Candidate ID:{" "}
-                <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                  {state.candidateId}
-                </code>
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setState({ status: "idle" })}
-              >
-                Submit another application
-              </Button>
-            </CardFooter>
-          </Card>
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Apply Now</CardTitle>
-              <CardDescription>
-                {jobListing
-                  ? `Applying for: ${jobListing.title}`
-                  : "Submit your application and our AI engine will evaluate your profile."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                ref={formRef}
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4"
-              >
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="Jane Doe"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="jane@example.com"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="resume">Resume</Label>
-                  <Input
-                    id="resume"
-                    name="resume"
-                    type="file"
-                    accept="application/pdf"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">PDF only</p>
-                </div>
-
-                {state.status === "error" && (
-                  <Alert variant="destructive">
-                    <WarningCircle />
-                    <AlertTitle>Submission failed</AlertTitle>
-                    <AlertDescription>{state.message}</AlertDescription>
-                  </Alert>
-                )}
-
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-xs">
+                  Candidate ID:{" "}
+                  <code className="font-mono bg-muted px-1 py-0.5 rounded">
+                    {state.candidateId}
+                  </code>
+                </p>
+              </CardContent>
+              <CardFooter>
                 <Button
-                  type="submit"
-                  disabled={state.status === "loading"}
-                  className="w-full"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setState({ status: "idle" })}
                 >
-                  {state.status === "loading" && (
-                    <SpinnerGap
-                      data-icon="inline-start"
-                      className="animate-spin"
-                    />
-                  )}
-                  {state.status === "loading"
-                    ? "Submitting…"
-                    : "Submit Application"}
+                  Submit another application
                 </Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+              </CardFooter>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Apply Now</CardTitle>
+                <CardDescription>
+                  {jobListing
+                    ? `Applying for: ${jobListing.title}`
+                    : "Submit your application and our AI engine will evaluate your profile."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form
+                  ref={formRef}
+                  onSubmit={handleSubmit}
+                  className="flex flex-col gap-4"
+                >
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      placeholder="Jane Doe"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="jane@example.com"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="resume">Resume</Label>
+                    <Input
+                      id="resume"
+                      name="resume"
+                      type="file"
+                      accept="application/pdf"
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">PDF only</p>
+                  </div>
+
+                  {state.status === "error" && (
+                    <Alert variant="destructive">
+                      <WarningCircle />
+                      <AlertTitle>Submission failed</AlertTitle>
+                      <AlertDescription>{state.message}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* GDPR consent */}
+                  <div className="flex flex-col gap-3 rounded-lg border bg-muted/40 p-4">
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="consentPrivacy"
+                        checked={consentPrivacy}
+                        onChange={(e) => setConsentPrivacy(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+                      />
+                      <label htmlFor="consentPrivacy" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                        I have read and agree to the{" "}
+                        <Link href="/privacy" target="_blank" className="text-primary underline underline-offset-3 font-medium">
+                          Privacy Policy
+                        </Link>
+                        {" "}and consent to my personal data being processed for recruitment purposes.
+                      </label>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        id="consentTerms"
+                        checked={consentTerms}
+                        onChange={(e) => setConsentTerms(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+                      />
+                      <label htmlFor="consentTerms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                        I understand my data will be retained for up to 12 months after this recruitment process concludes, and I may contact{" "}
+                        <a href="mailto:privacy@spark-hire.io" className="text-primary underline underline-offset-3 font-medium">
+                          privacy@spark-hire.io
+                        </a>
+                        {" "}to access, correct, or delete my data at any time.
+                      </label>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={state.status === "loading" || !consentPrivacy || !consentTerms}
+                    className="w-full"
+                  >
+                    {state.status === "loading" && (
+                      <SpinnerGap
+                        data-icon="inline-start"
+                        className="animate-spin"
+                      />
+                    )}
+                    {state.status === "loading"
+                      ? "Submitting…"
+                      : "Submit Application"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
+      </main>
+      <SiteFooter />
     </div>
   );
 }

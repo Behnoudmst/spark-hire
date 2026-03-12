@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # ── Required ────────────────────────────────────────────────────────────
+      AUTH_SECRET: "change-me-to-a-random-32+-char-string"
+      # ── Optional ────────────────────────────────────────────────────────────
+      COMPANY_NAME: "Spark-Hire"
+      DATABASE_URL: "file:/data/app.db"
+      # MOCK_Q1_SCORE: 80
+      # MOCK_Q2_SCORE: 85
+      # MOCK_Q1_FAIL: "false"
+    volumes:
+      - db-data:/data                  # SQLite database file
+      - uploads:/app/public/uploads    # Candidate resume uploads
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  uploads:

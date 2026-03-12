@@ -688,7 +688,10 @@ export const CandidateScalarFieldEnum = {
   scoreTotal: 'scoreTotal',
   appliedAt: 'appliedAt',
   updatedAt: 'updatedAt',
-  jobListingId: 'jobListingId'
+  jobListingId: 'jobListingId',
+  consentGiven: 'consentGiven',
+  consentAt: 'consentAt',
+  privacyPolicyVersion: 'privacyPolicyVersion'
 } as const
 
 export type CandidateScalarFieldEnum = (typeof CandidateScalarFieldEnum)[keyof typeof CandidateScalarFieldEnum]

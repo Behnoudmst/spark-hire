@@ -71,7 +71,11 @@ export async function PATCH(
 
   const updated = await prisma.candidate.update({
     where: { id },
-    data: { status: CandidateStatus.HUMAN_REVIEWED },
+    data: {
+      status: validation.data.decision === "HIRE"
+        ? CandidateStatus.HUMAN_REVIEWED
+        : CandidateStatus.REJECTED,
+    },
   });
 
   logger.info(
