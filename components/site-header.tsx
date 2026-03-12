@@ -34,7 +34,7 @@ export default async function SiteHeader({ backHref, backLabel }: Props) {
           </Link>
           {email && (
             <Link href="/recruiter" className="ml-auto">
-              <Button size="sm" className=" border-l pl-3 hidden sm:block truncate">
+              <Button size="sm" variant={"link"} className=" border-l pl-3 hidden sm:block truncate">
                 Recruiter Dashboard
               </Button>
             </Link>

@@ -1,4 +1,3 @@
-import SiteHeader from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -44,10 +43,7 @@ export default async function AllCandidatesPage() {
 
   return (
     <div className="min-h-[89vh] bg-background">
-      <SiteHeader
-        backHref="/recruiter"
-        backLabel="Dashboard"
-      />
+     
       <main className="mx-auto max-w-5xl p-6">
         <h1 className="text-lg font-semibold mb-4">All Candidates</h1>
         <Card>
