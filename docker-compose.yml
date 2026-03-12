@@ -6,12 +6,16 @@ services:
     environment:
       # ── Required ────────────────────────────────────────────────────────────
       AUTH_SECRET: "change-me-to-a-random-32+-char-string"
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: "${NEXTAUTH_URL:-http://localhost:3000}"
       # ── Optional ────────────────────────────────────────────────────────────
       COMPANY_NAME: "Spark-Hire"
       DATABASE_URL: "file:/data/app.db"
-      # MOCK_Q1_SCORE: 80
-      # MOCK_Q2_SCORE: 85
-      # MOCK_Q1_FAIL: "false"
+      MOCK_Q1_SCORE: 80
+      MOCK_Q2_SCORE: 85
+      MOCK_Q1_FAIL: "false"
+      SEED_RECRUITER_EMAIL: "dev@example.com"
+      SEED_RECRUITER_PASSWORD: "dev@93245"
     volumes:
       - db-data:/data                  # SQLite database file
       - uploads:/app/public/uploads    # Candidate resume uploads
