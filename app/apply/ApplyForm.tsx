@@ -90,7 +90,7 @@ export default function ApplyForm({ jobListing }: Props) {
       >
         {/* Left: job description */}
         {jobListing && (
-          <div className="md:sticky md:top-20 md:max-h-[calc(100vh-6rem)] md:overflow-y-auto">
+          <div>
             <div className="mb-3 flex items-center gap-2">
               <Briefcase className="size-5 text-primary" weight="fill" />
               <h1 className="text-xl font-semibold">{jobListing.title}</h1>
@@ -109,7 +109,7 @@ export default function ApplyForm({ jobListing }: Props) {
         )}
 
         {/* Right: form */}
-        <div>
+        <div className="md:sticky md:top-20">
           {state.status === "success" ? (
             <Card>
               <CardHeader>
