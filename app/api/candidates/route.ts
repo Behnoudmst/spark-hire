@@ -1,13 +1,18 @@
+import { auth } from "@/lib/auth";
 import { PRIVACY_POLICY_VERSION } from "@/lib/brand";
 import { inngest } from "@/lib/inngest";
 import logger from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { runEvaluationPipelineDirect } from "@/lib/queue";
 import { candidateApplicationSchema } from "@/lib/schemas";
+import { randomUUID } from "crypto";
 import { mkdir, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { extractText } from "unpdf";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const UPLOADS_DIR = path.join(process.cwd(), "private", "uploads");
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,11 +45,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save PDF to local disk
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
-    const filename = `${Date.now()}-${resume.name.replace(/[^a-z0-9.\-_]/gi, "_")}`;
-    const filePath = path.join(uploadsDir, filename);
+    if (resume.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "Resume must be under 5 MB" },
+        { status: 413 },
+      );
+    }
+
+    // Save PDF to private directory (not publicly served)
+    await mkdir(UPLOADS_DIR, { recursive: true });
+    const filename = `${randomUUID()}.pdf`;
+    const filePath = path.join(UPLOADS_DIR, filename);
     const bytes = await resume.arrayBuffer();
     await writeFile(filePath, Buffer.from(bytes));
 
@@ -61,7 +72,7 @@ export async function POST(req: NextRequest) {
       data: {
         name: validation.data.name,
         email: validation.data.email,
-        resumePath: `/uploads/${filename}`,
+        resumePath: `/api/uploads/${filename}`,
         resumeText,
         consentGiven: true,
         consentAt: new Date(),
@@ -95,6 +106,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const candidates = await prisma.candidate.findMany({
     orderBy: { appliedAt: "desc" },
     select: {
