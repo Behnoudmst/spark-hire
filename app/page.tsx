@@ -2,9 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { COMPANY_NAME } from "@/lib/brand";
 import { prisma } from "@/lib/prisma";
 import {
-    ArrowRight,
-    Briefcase,
-    MapPin
+  ArrowRight,
+  Briefcase,
+  MapPin
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import JobSearchInput from "./JobSearchInput";
@@ -63,7 +63,7 @@ export default async function Home({
             We&apos;re hiring
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-            <span className="text-primary">{COMPANY_NAME}</span> Jobs
+            <span className="text-primary">{COMPANY_NAME}</span> 
           </h1>
           <p className="max-w-md text-base text-muted-foreground leading-relaxed">
             Explore open roles and find your next opportunity. Every application is reviewed thoughtfully.
